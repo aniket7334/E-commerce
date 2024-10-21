@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShopEasy - Your One Stop E-Commerce</title>
+    <link rel="stylesheet" href="/style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+
+<body>
+
+    <!-- Header Section -->
+    
+    <div class="head">
+        <img src="/logo-color.png" alt="ShopEasy Logo" class="logo" href="#home">
+        <div class="site-name">
+            <h1>ShopEasy - The Future </h1>
+        </div>
+    </div>
+
+
+    <!-- Navigation -->
+    <div class="nav">
+        <a href="#home">HOME</a>
+        <a href="#products">PRODUCTS</a>
+        <a href="#about">ABOUT</a>
+        <a href="#contact">CONTACT</a>
+        <a href="/signupPage.html" class="signup-link">LOGIN</a>
+        <i class="fa fa-shopping-cart" style="font-size: 40px;">
+            <span id="number">0</span>
+        </i>
+    </div>
+
+    <!-- Home Section -->
+    <div id="home">
+        <h1>Welcome to ShopEasy</h1>
+        <p>Your one-stop destination for all your shopping needs. Discover our exclusive range of products and enjoy a
+            seamless shopping experience.</p>
+        <img src="/make a image th 86bdf6e5-c8c4-4f3a-8305-2dd3fa967b13.png" alt="ShopEasy Banner" class="home-image">
+    </div>
+
+    <!-- Products Section -->
+    <div id="products">
+        <h2>Our Products</h2>
+        <div id="main"></div>
+    </div>
+
+    <!-- About Section -->
+    <div id="about">
+        <h1>About Us - ShopEasy</h1>
+    </div>
+
+    <div class="container">
+        <div class="about-section">
+            <h2>Our Story</h2>
+            <p>At ShopEasy, we believe in making your shopping experience effortless and enjoyable. Our goal is to provide you with high-quality products at competitive prices, all in one place. Whether you're looking for the latest fashion trends, electronics, or household essentials, we have you covered.</p>
+            <p>Our team is passionate about delivering the best customer service and ensuring that your orders are handled with care and precision. Thank you for choosing ShopEasy as your trusted shopping partner!</p>
+        </div>
+
+        <div class="team">
+            <div class="team-member">
+                <img src="/WhatsApp Image 2024-10-21 at 15.02.06_cd6c3d6f.jpg" alt="Image of Aniket">
+                <h3>Aniket Bante</h3>
+                <p>Founder & CEO</p>
+            </div>
+
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Jane Smith">
+                <h3>Jane Smith</h3>
+                <p>Head of Operations</p>
+            </div>
+
+            <div class="team-member">
+                <img src="https://via.placeholder.com/150" alt="Mark Wilson">
+                <h3>Mark Wilson</h3>
+                <p>Customer Support Lead</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Contact Section -->
+    <div id="contact">
+        <h1>Contact Us - ShopEasy</h1>
+    </div>
+
+    <div class="contact-container">
+        <h2 class="contact-title">We’d Love to Hear From You!</h2>
+        <p class="contact-description">If you have any questions, suggestions, or feedback, feel free to reach out. Our team is always ready to assist you.</p>
+
+        <form class="contact-form-container">
+            <div class="contact-form-group">
+                <input type="text" placeholder="Full Name" required>
+            </div>
+            <div class="contact-form-group">
+                <input type="email" placeholder="Email Address" required>
+            </div>
+            <div class="contact-form-group">
+                <input type="text" placeholder="Phone Number" required>
+            </div>
+            <div class="contact-form-group">
+                <input type="text" placeholder="Subject" required>
+            </div>
+            <div class="contact-form-group contact-form-group-full">
+                <textarea placeholder="Your Message" required></textarea>
+            </div>
+            <div class="contact-form-group contact-form-group-full">
+                <button type="submit" class="contact-submit-button">Send Message</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Cart Section -->
+    <div id="animatedDiv">
+        <button class="close-button">&times;</button>
+        <h3>Your Cart</h3>
+        <div id="cartItems"></div>
+        <div id="totalPrice"></div>
+        <div id="buttonContainer">
+            <button id="buyNowButton" onclick="buyNow()">Buy Now</button>
+        </div>
+        
+    </div>
+
+    <script>
+        (async () => {
+            let main = document.getElementById("main");
+            let animatedDiv = document.getElementById('animatedDiv');
+            let cartItems = document.getElementById('cartItems');
+            let cart = document.getElementById("number");
+            let totalPrice = document.getElementById('totalPrice');
+            let cartIcon = document.querySelector('.fa-shopping-cart');
+            let closeButton = document.querySelector('.close-button');
+            let buyNowButton = document.getElementById('buyNowButton');
+            let numberCart = 0;
+
+            // Fetching product data from API
+            let url = ("https://dummyjson.com/products");
+            let response = await fetch(url);
+            let data = await response.json();
+
+            // Adding product cards
+            data.products.forEach(element => {
+                let div = document.createElement("div");
+                div.setAttribute("class", "div");
+
+                div.innerHTML = `<img class="img" src="${element.images[0]}" alt="${element.title}">
+                                 <h2>${element.title}</h2>
+                                 <p>Price: $${element.price}</p>
+                                 <button class="button">Add to Cart</button>`;
+
+                main.appendChild(div);
+
+                // Add to cart functionality
+                let add = div.querySelector(".button");
+                add.addEventListener('click', () => {
+                    addToCart(element);
+                });
+            });
+
+            // Function to add item to cart
+            function addToCart(element) {
+                numberCart++;
+                cart.innerHTML = numberCart;
+                let obj = {
+                    image: element.images[0],
+                    id: element.id,
+                    title: element.title,
+                    price: element.price,
+                    quantity: 1
+                };
+                let dataExist = localStorage.getItem('product');
+                if (dataExist) {
+                    let arrayUsers = JSON.parse(dataExist);
+                    arrayUsers.push(obj);
+                    localStorage.setItem('product', JSON.stringify(arrayUsers));
+                } else {
+                    let arrayUsers = [obj];
+                    localStorage.setItem('product', JSON.stringify(arrayUsers));
+                }
+            }
+
+            // Function to show cart
+            function showCart() {
+                let cartData = JSON.parse(localStorage.getItem("product")) || [];
+                cartItems.innerHTML = '';
+                cartData.forEach(product => {
+                    let productDiv = document.createElement('div');
+                    productDiv.innerHTML = `<img src="${product.image}" width="50" height="50">
+                                            <p>${product.title}</p> 
+                                              <p>Price: $<span class="item-price">${(product.price * product.quantity).toFixed(2)}</span></p>
+                                             <label>Quantity: 
+                                                 <input type="number" class="quantity-input" value="${product.quantity}" data-id="${product.id}" min="1">
+                                            </label>
+                                            <button data-id="${product.id}" class="remove-button">Remove</button>`;
+                    cartItems.appendChild(productDiv);
+
+
+                    // Handle quantity change
+                    let quantityInput = productDiv.querySelector('.quantity-input');
+                    quantityInput.addEventListener('change', function () {
+                        let newQuantity = parseInt(quantityInput.value);
+                        updateItemQuantity(product.id, newQuantity); // Update quantity in local storage
+                    })
+
+
+
+                    let removeButton = productDiv.querySelector('.remove-button');
+                    removeButton.addEventListener('click', function () {
+                        removeItem(product.id); // Call removeItem function with product ID
+                    });
+                });
+
+                updateTotalPrice();
+
+                animatedDiv.style.display = 'block';
+
+
+            }
+
+            // Function to hide cart
+            function hideCart() {
+                animatedDiv.style.display = 'none';
+            }
+
+            // Event listeners for cart
+            cartIcon.addEventListener("click", () => {
+                if (animatedDiv.style.display === 'none' || animatedDiv.style.display === "") {
+                    showCart();
+                } else {
+                    hideCart();
+                }
+            });
+
+            closeButton.addEventListener("click", hideCart);
+
+
+
+            // Remove item from cart
+            function removeItem(id) {
+                let cartData = JSON.parse(localStorage.getItem("product")) || [];
+                cartData = cartData.filter(item => item.id !== id);
+                localStorage.setItem("product", JSON.stringify(cartData));
+                numberCart = cartData.length;
+                cart.innerHTML = numberCart;
+                showCart();
+            }
+
+            // Update item quantity in cart
+            function updateItemQuantity(id, quantity) {
+                let cartData = JSON.parse(localStorage.getItem("product")) || [];
+                cartData = cartData.map(item => {
+                    if (item.id === parseInt(id)) {
+                        item.quantity = quantity;
+                    }
+                    return item;
+                });
+                localStorage.setItem("product", JSON.stringify(cartData));
+                showCart();
+
+                updateTotalPrice();
+            }
+
+            // Update total price
+            function updateTotalPrice() {
+                let cartData = JSON.parse(localStorage.getItem("product")) || [];
+                let total = 0;
+                cartData.forEach(item => {
+                    total += item.price * item.quantity;
+                });
+                totalPrice.innerHTML = `Total Price: $${total.toFixed(2)}`;
+            }
+
+            
+            
+            
+        })();
+
+        function buyNow() {
+            console.log('Buy Now button clicked.');
+        
+            // Get cart items from localStorage
+            const cartItems = JSON.parse(localStorage.getItem('product')) || [];
+            console.log('Cart Items:', cartItems);
+            
+            // Check if cartItems is empty
+            if (cartItems.length === 0) {
+                alert('Your cart is empty!');
+                return;
+            }
+            
+            // Store cart items in localStorage
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            
+            // Redirect to checkout page
+            window.location.href = 'checkOutPage.html';
+        }
+    </script>
+</body>
+
+</html>
