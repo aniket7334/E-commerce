@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Checkout - ShopEasy</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .header {
+            background-color: #243837;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 20px;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+
+        .cart-item img {
+            width: 50px;
+            height: 50px;
+            border-radius: 5px;
+        }
+
+        .cart-item p {
+            margin: 0;
+        }
+
+        .cart-item .item-info {
+            flex: 1;
+            margin-left: 10px;
+        }
+
+        .total-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+
+        /* Customer Details Section */
+        .customer-details {
+            margin: 30px 0;
+        }
+
+        .customer-details label {
+            display: block;
+            margin-top: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .customer-details input, .customer-details textarea {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        /* Payment Options Section */
+        .payment-options {
+            margin: 30px 0;
+        }
+
+        .payment-options label {
+            display: block;
+            margin-top: 10px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        .payment-options select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        .checkout-button {
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(135deg, #ff9f43, #f56c6c);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.3s ease, transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+
+        .checkout-button:hover {
+            background: linear-gradient(135deg, #f56c6c, #ff9f43);
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .checkout-button:active {
+            background: linear-gradient(135deg, #ff8a3b, #e86c6c);
+            transform: scale(0.98);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="header">
+        <h1>Checkout - ShopEasy</h1>
+    </div>
+
+    <div class="container">
+        <h1>Order Summary</h1>
+
+        <!-- Dynamically loaded cart items -->
+        <div id="cartItems"></div>
+
+        <div class="total-price" id="totalPrice">
+            Total Price: $0.00
+        </div>
+
+        <!-- Customer Details Section -->
+        <div class="customer-details">
+            <h2>Customer Details</h2>
+
+            <label for="name">Full Name:</label>
+            <input type="text" id="name" placeholder="Enter your name" required>
+
+            <label for="email">Email Address:</label>
+            <input type="email" id="email" placeholder="Enter your email" required>
+
+            <label for="address">Shipping Address:</label>
+            <textarea id="address" rows="4" placeholder="Enter your shipping address" required></textarea>
+        </div>
+
+        <!-- Payment Options Section -->
+        <div class="payment-options">
+            <h2>Payment Method</h2>
+
+            <label for="payment-method">Select Payment Method:</label>
+            <select id="payment-method">
+                <option value="credit-card">Credit Card</option>
+                <option value="paypal">PayPal</option>
+                <option value="upi">UPI</option>
+                <option value="cod">Cash on Delivery</option>
+            </select>
+        </div>
+
+        <button class="checkout-button" onclick="processPayment()">Proceed to Payment</button>
+    </div>
+
+    <script>
+        let cart = [];
+
+        function loadCart() {
+            const storedCart = localStorage.getItem('cartItems');
+            if (storedCart) {
+                cart = JSON.parse(storedCart);
+                displayCheckoutItems();
+            }
+        }
+
+        function displayCheckoutItems() {
+            let checkoutItemsContainer = document.getElementById('cartItems');
+            let totalPriceContainer = document.getElementById('totalPrice');
+
+            // Retrieve cart items from localStorage
+            let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            if (cartItems.length === 0) {
+                checkoutItemsContainer.innerHTML = '<p>Your cart is empty.</p>';
+                return;
+            }
+
+            // Display cart items and calculate total price
+            let total = 0;
+            cartItems.forEach(item => {
+                let itemDiv = document.createElement('div');
+                itemDiv.classList.add('cart-item');
+                itemDiv.innerHTML = `
+                    <img src="${item.image}" >
+                    <p>${item.title}</p>
+                    <p>Price: $${item.price}</p>
+                    <p>Quantity: ${item.quantity}</p>
+                `;
+                checkoutItemsContainer.appendChild(itemDiv);
+
+                total += item.price * item.quantity;
+            });
+
+            totalPriceContainer.innerHTML = `Total Price: $${total.toFixed(2)}`;
+
+            console.log("i am active")
+        }
+
+        function processPayment() {
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const address = document.getElementById('address').value;
+            const paymentMethod = document.getElementById('payment-method').value;
+
+            if (name === '' || email === '' || address === '' || paymentMethod === '') {
+                alert('Please fill out all fields.');
+                return;
+            }
+
+            alert(`Thank you, ${name}! Your order has been placed successfully.`);
+
+            document.getElementById('name').value = '';
+            document.getElementById('email').value = '';
+            document.getElementById('address').value = '';
+            document.getElementById('payment-method').selectedIndex = 0;
+
+            localStorage.removeItem('cartItems'); // Clear the cart after checkout
+        }
+
+        window.onload = loadCart;
+    </script>
+
+</body>
+
+</html>
